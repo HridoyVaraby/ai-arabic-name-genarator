@@ -3,6 +3,18 @@ import { Search, RefreshCw, RotateCcw } from 'lucide-react';
 import { Gender } from '../types/name';
 import { ModelSelector } from './ModelSelector';
 
+// English alphabet A-Z
+const ENGLISH_LETTERS = Array.from({ length: 26 }, (_, i) => 
+  String.fromCharCode(65 + i)
+);
+
+// Common Arabic alphabet letters used in names
+const ARABIC_LETTERS = [
+  'ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 
+  'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 
+  'ل', 'م', 'ن', 'ه', 'و', 'ي'
+];
+
 interface SearchFormProps {
   onSubmit: (letter: string, gender: Gender, modelId: string) => void;
   onReset: () => void;
@@ -21,25 +33,39 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSubmit, onReset, isLoa
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
-      <ModelSelector
-        onModelChange={setModelId}
-      />
+      <ModelSelector onModelChange={setModelId} />
 
       <div>
         <label htmlFor="letter" className="block text-sm font-medium text-gray-700 mb-2">
-          Starting Letter (Arabic or English)
+          Select Starting Letter
         </label>
-        <input
-          type="text"
+        <select
           id="letter"
-          maxLength={1}
           value={letter}
           onChange={(e) => setLetter(e.target.value)}
           className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-          placeholder="Enter a letter..."
-        />
+        >
+          <option value="">Choose a letter...</option>
+          
+          <optgroup label="English Alphabet">
+            {ENGLISH_LETTERS.map((char) => (
+              <option key={`en-${char}`} value={char}>
+                {char} - {String.fromCharCode(97 + char.charCodeAt(0) - 65)}
+              </option>
+            ))}
+          </optgroup>
+          
+          <optgroup label="Arabic Alphabet">
+            {ARABIC_LETTERS.map((char, index) => (
+              <option key={`ar-${index}`} value={char}>
+                {char} - {getArabicLetterName(char)}
+              </option>
+            ))}
+          </optgroup>
+        </select>
       </div>
 
+      {/* Rest of the component remains the same */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Gender Preference</label>
         <div className="flex gap-4">
@@ -85,3 +111,38 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSubmit, onReset, isLoa
     </form>
   );
 };
+
+// Helper function to get Arabic letter names
+function getArabicLetterName(char: string): string {
+  const names: { [key: string]: string } = {
+    'ا': 'Alif',
+    'ب': 'Ba',
+    'ت': 'Ta',
+    'ث': 'Tha',
+    'ج': 'Jeem',
+    'ح': 'Haa',
+    'خ': 'Khaa',
+    'د': 'Dal',
+    'ذ': 'Thal',
+    'ر': 'Ra',
+    'ز': 'Zay',
+    'س': 'Seen',
+    'ش': 'Sheen',
+    'ص': 'Sad',
+    'ض': 'Dad',
+    'ط': 'Taa',
+    'ظ': 'Zaa',
+    'ع': 'Ayn',
+    'غ': 'Ghain',
+    'ف': 'Fa',
+    'ق': 'Qaf',
+    'ك': 'Kaf',
+    'ل': 'Lam',
+    'م': 'Meem',
+    'ن': 'Noon',
+    'ه': 'Ha',
+    'و': 'Waw',
+    'ي': 'Ya'
+  };
+  return names[char] || char;
+}

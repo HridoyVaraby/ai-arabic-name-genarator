@@ -1,6 +1,5 @@
 import React from 'react';
 import { ChevronDown, AlertCircle, Loader2 } from 'lucide-react';
-import { useFloating, useInteractions, useHover, offset, flip, shift } from '@floating-ui/react';
 import { OpenRouterModel } from '../types/model';
 import { useModels } from '../hooks/useModels';
 
@@ -11,17 +10,7 @@ interface ModelSelectorProps {
 export const ModelSelector: React.FC<ModelSelectorProps> = ({ onModelChange }) => {
   const { models, isLoading, error, selectedModel, setSelectedModel } = useModels();
   const [isOpen, setIsOpen] = React.useState(false);
-  const [hoveredModel, setHoveredModel] = React.useState<OpenRouterModel | null>(null);
   const [searchTerm, setSearchTerm] = React.useState('');
-
-  const { refs, floatingStyles, context } = useFloating({
-    open: !!hoveredModel,
-    placement: 'right',
-    middleware: [offset(10), flip(), shift()],
-  });
-
-  const hover = useHover(context);
-  const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
 
   const filteredModels = React.useMemo(() => {
     return models.filter(model => 
@@ -95,15 +84,11 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({ onModelChange }) =
             {filteredModels.map((model) => (
               <div
                 key={model.id}
-                ref={refs.setReference}
-                {...getReferenceProps()}
                 className={`
                   px-4 py-2 hover:bg-gray-50 cursor-pointer
                   ${selectedModel?.id === model.id ? 'bg-emerald-50' : ''}
                 `}
                 onClick={() => handleModelSelect(model)}
-                onMouseEnter={() => setHoveredModel(model)}
-                onMouseLeave={() => setHoveredModel(null)}
               >
                 <div className="flex flex-col">
                   <span className="font-medium">{model.name}</span>
@@ -114,17 +99,6 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({ onModelChange }) =
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {hoveredModel && (
-        <div
-          ref={refs.setFloating}
-          style={floatingStyles}
-          {...getFloatingProps()}
-          className="bg-gray-900 text-white p-2 rounded-md text-sm max-w-xs"
-        >
-          {hoveredModel.description || 'No description available'}
         </div>
       )}
     </div>

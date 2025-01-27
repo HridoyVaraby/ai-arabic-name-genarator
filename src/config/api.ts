@@ -20,7 +20,7 @@ export const AVAILABLE_MODELS: LLMModel[] = [
 ];
 
 export const API_CONFIG = {
-  OPENROUTER_API_KEY: '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',
+  OPENROUTER_API_KEY: import.meta.env.VITE_OPENROUTER_API_KEY,
   API_URL: 'https://openrouter.ai/api/v1/chat/completions',
   HEADERS: {
     'HTTP-Referer': 'https://stackblitz.com',

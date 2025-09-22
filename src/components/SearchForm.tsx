@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, RefreshCw, RotateCcw } from 'lucide-react';
 import { Gender } from '../types/name';
-import { ModelSelector } from './ModelSelector';
+import { DEFAULT_MODEL } from '../config/api';
 
 // English alphabet A-Z
 const ENGLISH_LETTERS = Array.from({ length: 26 }, (_, i) => 
@@ -24,17 +24,14 @@ interface SearchFormProps {
 export const SearchForm: React.FC<SearchFormProps> = ({ onSubmit, onReset, isLoading }) => {
   const [letter, setLetter] = React.useState('');
   const [gender, setGender] = React.useState<Gender>('neutral');
-  const [modelId, setModelId] = React.useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(letter, gender, modelId);
+    onSubmit(letter, gender, DEFAULT_MODEL.id);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
-      <ModelSelector onModelChange={setModelId} />
-
       <div>
         <label htmlFor="letter" className="block text-sm font-medium text-gray-700 mb-2">
           Select Starting Letter
@@ -88,7 +85,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSubmit, onReset, isLoa
       <div className="flex gap-4">
         <button
           type="submit"
-          disabled={isLoading || !modelId || !letter}
+          disabled={isLoading || !letter}
           className="flex items-center justify-center px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
         >
           {isLoading ? (

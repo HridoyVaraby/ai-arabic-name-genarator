@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Gender, ArabicName } from '../types/name';
-import { API_CONFIG } from '../config/api';
+import { API_CONFIG, DEFAULT_MODEL } from '../config/api';
 import { generatePrompt } from '../utils/promptGenerator';
 import { validateAndTransformResponse } from '../utils/responseTransformer';
 
@@ -10,8 +10,14 @@ export const generateNames = async (
   modelId: string
 ): Promise<ArabicName[]> => {
   try {
+    // Check if this is a Groq model
+    const isGroqModel = DEFAULT_MODEL.provider === 'groq';
+
+    const apiUrl = isGroqModel ? API_CONFIG.GROQ_API_URL : API_CONFIG.OPENROUTER_API_URL;
+    const apiKey = isGroqModel ? API_CONFIG.GROQ_API_KEY : API_CONFIG.OPENROUTER_API_KEY;
+
     const response = await axios.post(
-      API_CONFIG.API_URL,
+      apiUrl,
       {
         model: modelId,
         messages: [
@@ -30,9 +36,9 @@ export const generateNames = async (
       },
       {
         headers: {
-          'Authorization': `Bearer ${API_CONFIG.OPENROUTER_API_KEY}`,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
-          ...API_CONFIG.HEADERS
+          ...(isGroqModel ? {} : API_CONFIG.HEADERS)
         }
       }
     );

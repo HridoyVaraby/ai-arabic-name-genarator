@@ -4,6 +4,7 @@ import { NameCard } from './components/NameCard';
 import { ArabicName, Gender } from './types/name';
 import { validateLetter } from './utils/nameUtils';
 import { generateNames } from './services/nameGenerator';
+import { DEFAULT_MODEL } from './config/api';
 
 function App() {
   const [names, setNames] = useState<ArabicName[]>([]);
@@ -12,7 +13,6 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [currentLetter, setCurrentLetter] = useState<string>('');
   const [currentGender, setCurrentGender] = useState<Gender>('neutral');
-  const [currentModelId, setCurrentModelId] = useState<string>('');
 
   const handleSubmit = async (letter: string, gender: Gender, modelId: string) => {
     setError(null);
@@ -29,27 +29,26 @@ function App() {
       setAllGeneratedNames(generatedNames);
       setCurrentLetter(letter);
       setCurrentGender(gender);
-      setCurrentModelId(modelId);
     } catch (err) {
-      setError('Failed to generate names. Please try again or Select a different model from the select language model option.');
+      setError('Failed to generate names. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGenerateMore = async () => {
-    if (!currentLetter || !currentGender || !currentModelId) return;
+    if (!currentLetter || !currentGender) return;
 
     setIsLoading(true);
     try {
-      const newNames = await generateNames(currentLetter, currentGender, currentModelId);
+      const newNames = await generateNames(currentLetter, currentGender, DEFAULT_MODEL.id);
       const uniqueNewNames = newNames.filter(newName =>
         !allGeneratedNames.some(existingName => existingName.arabic === newName.arabic)
       );
       setNames(prevNames => [...prevNames, ...uniqueNewNames]);
       setAllGeneratedNames(prevNames => [...prevNames, ...uniqueNewNames]);
     } catch (err) {
-      setError('Failed to generate names. Please try again or Select a different model from the select language model option.');
+      setError('Failed to generate names. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +60,6 @@ function App() {
     setError(null);
     setCurrentLetter('');
     setCurrentGender('neutral');
-    setCurrentModelId('');
   };
 
   return (

@@ -19,3 +19,7 @@ export interface ModelState {
   error: string | null;
   selectedModel: OpenRouterModel | null;
 }
+
+export interface LLMModel extends OpenRouterModel {
+  isFree: boolean;
+}

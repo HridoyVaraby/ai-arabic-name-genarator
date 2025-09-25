@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { RefreshCw } from 'lucide-react';
 import { SearchForm } from './components/SearchForm';
 import { NameCard } from './components/NameCard';
 import { ArabicName, Gender } from './types/name';
@@ -14,7 +15,7 @@ function App() {
   const [currentLetter, setCurrentLetter] = useState<string>('');
   const [currentGender, setCurrentGender] = useState<Gender>('neutral');
 
-  const handleSubmit = async (letter: string, gender: Gender, modelId: string) => {
+  const handleSubmit = async (letter: string, gender: Gender) => {
     setError(null);
     
     if (!validateLetter(letter)) {
@@ -24,7 +25,7 @@ function App() {
 
     setIsLoading(true);
     try {
-      const generatedNames = await generateNames(letter, gender, modelId);
+      const generatedNames = await generateNames(letter, gender, DEFAULT_MODEL.id);
       setNames(generatedNames);
       setAllGeneratedNames(generatedNames);
       setCurrentLetter(letter);
@@ -87,18 +88,20 @@ function App() {
         {names.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {names.map((name, index) => (
-              <NameCard key={index} name={name} onGenerateMore={handleGenerateMore} />
+              <NameCard key={index} name={name} />
             ))}
-            {!isLoading && (
-              <div className="col-span-full flex justify-center">
-                <button
-                  onClick={handleGenerateMore}
-                  className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-                >
-                  Generate More
-                </button>
-              </div>
-            )}
+            <div className="col-span-full flex justify-center">
+              <button
+                onClick={handleGenerateMore}
+                disabled={isLoading}
+                className="flex items-center justify-center px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
+              >
+                {isLoading ? (
+                  <RefreshCw className="w-5 h-5 animate-spin mr-2" />
+                ) : null}
+                Generate More
+              </button>
+            </div>
           </div>
         )}
 

@@ -23,7 +23,7 @@ The response must be a JSON array like this:
 Requirements:
 - Return ONLY the JSON array
 - Start your response with [ and end with ]
-- Each name must start with "${letter}"
+- Each name must start with the letter ${letter}
 - Names must be culturally appropriate for ${gender}
 - Each name must be unique and traditional
 - Include exactly 8 names

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Search, RefreshCw, RotateCcw } from 'lucide-react';
 import { Gender } from '../types/name';
-import { DEFAULT_MODEL } from '../config/api';
 
 // English alphabet A-Z
 const ENGLISH_LETTERS = Array.from({ length: 26 }, (_, i) => 
@@ -16,7 +15,7 @@ const ARABIC_LETTERS = [
 ];
 
 interface SearchFormProps {
-  onSubmit: (letter: string, gender: Gender, modelId: string) => void;
+  onSubmit: (letter: string, gender: Gender) => void;
   onReset: () => void;
   isLoading: boolean;
 }
@@ -27,7 +26,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSubmit, onReset, isLoa
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(letter, gender, DEFAULT_MODEL.id);
+    onSubmit(letter, gender);
   };
 
   return (

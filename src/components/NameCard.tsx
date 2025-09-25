@@ -3,10 +3,9 @@ import { ArabicName } from '../types/name';
 
 interface NameCardProps {
   name: ArabicName;
-  onGenerateMore: () => void;
 }
 
-export const NameCard: React.FC<NameCardProps> = ({ name, onGenerateMore }) => {
+export const NameCard: React.FC<NameCardProps> = ({ name }) => {
   return (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
       <h3 className="text-3xl font-bold text-right mb-2 text-emerald-800">{name.arabic}</h3>

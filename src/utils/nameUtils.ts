@@ -1,5 +1,3 @@
-import { Gender } from '../types/name';
-
 export const validateLetter = (letter: string): boolean => {
   if (!letter) return false;
   

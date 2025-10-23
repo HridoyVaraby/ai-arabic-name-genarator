@@ -35,8 +35,8 @@ Requirements:
 export const generateMeaningPrompt = (meaning: string): string => {
   return `
     For the English word "${meaning}", provide the following in a JSON object:
-    1.  "directTranslation": { "arabic": "...", "pronunciation": "..." }
+    1.  "directTranslation": { "arabic": "...", "pronunciation": "...", "englishMeaning": "..." }
     2.  "names": [ { "arabic": "...", "transliteration": "...", "gender": "...", "meaning_nuance": "..." }, ... ]
-    3.  "synonyms": [ { "arabic_word": "...", "transliteration": "...", "concept": "...", "names": [ ... ] }, ... ]
+    3.  "synonyms": [ { "arabic_word": "...", "transliteration": "...", "concept": "...", "englishMeaning": "...", "names": [ ... ] }, ... ]
     `;
 };

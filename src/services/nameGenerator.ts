@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { Gender, ArabicName } from '../types/name';
-import { API_CONFIG, DEFAULT_MODEL } from '../config/api';
+import { API_CONFIG } from '../config/api';
 import { generatePrompt, generateMeaningPrompt } from '../utils/promptGenerator';
 import { validateAndTransformResponse } from '../utils/responseTransformer';
+import { MeaningSearchResults } from '../types';
 
 export const generateNames = async (
   letter: string,
@@ -56,7 +57,7 @@ export const generateNames = async (
 export const generateNamesByMeaning = async (
   meaning: string,
   modelId: string
-): Promise<any> => {
+): Promise<MeaningSearchResults> => {
   try {
     const response = await axios.post(
       API_CONFIG.GROQ_API_URL,

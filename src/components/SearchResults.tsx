@@ -1,20 +1,9 @@
 import React from 'react';
-import { ArabicName } from '../types/name';
+
+import { MeaningSearchResults } from '../types';
 
 interface SearchResultsProps {
-  results: {
-    directTranslation: {
-      arabic: string;
-      pronunciation: string;
-    };
-    names: ArabicName[];
-    synonyms: {
-      arabic_word: string;
-      transliteration: string;
-      concept: string;
-      names: ArabicName[];
-    }[];
-  };
+  results: MeaningSearchResults;
 }
 
 export const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
@@ -25,6 +14,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
         <div className="bg-white p-4 rounded-lg shadow">
           <p className="text-3xl text-right font-arabic">{results.directTranslation.arabic}</p>
           <p className="text-lg text-gray-600">{results.directTranslation.pronunciation}</p>
+          <p className="text-md text-gray-500">{results.directTranslation.englishMeaning}</p>
         </div>
       </div>
 
@@ -36,7 +26,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
               <p className="text-2xl text-right font-arabic">{name.arabic}</p>
               <p className="text-lg font-semibold">{name.transliteration}</p>
               <p className="text-sm text-gray-500">{name.gender}</p>
-              <p className="text-md mt-2">{name.meaning}</p>
+              <p className="text-md mt-2">{name.meaning_nuance}</p>
             </div>
           ))}
         </div>
@@ -50,6 +40,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ results }) => {
               <h3 className="text-xl font-semibold text-emerald-700">{synonym.concept}</h3>
               <p className="text-2xl text-right font-arabic">{synonym.arabic_word}</p>
               <p className="text-lg text-gray-600">{synonym.transliteration}</p>
+              <p className="text-md text-gray-500">{synonym.englishMeaning}</p>
               <div className="mt-4">
                 <h4 className="font-semibold">Related Names:</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">

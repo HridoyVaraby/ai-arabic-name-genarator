@@ -4,8 +4,9 @@ import { SearchForm } from './components/SearchForm';
 import { NameCard } from './components/NameCard';
 import { ArabicName, Gender } from './types/name';
 import { validateLetter } from './utils/nameUtils';
-import { generateNames } from './services/nameGenerator';
+import { generateNames, generateNamesByMeaning } from './services/nameGenerator';
 import { DEFAULT_MODEL } from './config/api';
+import { SearchResults } from './components/SearchResults';
 
 function App() {
   const [names, setNames] = useState<ArabicName[]>([]);
@@ -14,9 +15,11 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [currentLetter, setCurrentLetter] = useState<string>('');
   const [currentGender, setCurrentGender] = useState<Gender>('neutral');
+  const [meaningSearchResults, setMeaningSearchResults] = useState<any>(null);
 
   const handleSubmit = async (letter: string, gender: Gender) => {
     setError(null);
+    setMeaningSearchResults(null);
     
     if (!validateLetter(letter)) {
       setError('Please enter a valid Arabic or English letter');
@@ -32,6 +35,20 @@ function App() {
       setCurrentGender(gender);
     } catch (err) {
       setError('Failed to generate names. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSearchByMeaning = async (meaning: string) => {
+    setError(null);
+    setNames([]);
+    setIsLoading(true);
+    try {
+      const results = await generateNamesByMeaning(meaning, DEFAULT_MODEL.id);
+      setMeaningSearchResults(results);
+    } catch (err) {
+      setError('Failed to generate names by meaning. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -61,6 +78,7 @@ function App() {
     setError(null);
     setCurrentLetter('');
     setCurrentGender('neutral');
+    setMeaningSearchResults(null);
   };
 
   return (
@@ -75,6 +93,7 @@ function App() {
 
         <SearchForm
           onSubmit={handleSubmit}
+          onSearchByMeaning={handleSearchByMeaning}
           onReset={handleReset}
           isLoading={isLoading}
         />
@@ -105,7 +124,11 @@ function App() {
           </div>
         )}
 
-        {!names.length && !error && (
+        {meaningSearchResults && (
+          <SearchResults results={meaningSearchResults} />
+        )}
+
+        {!names.length && !meaningSearchResults && !error && (
           <div className="text-center text-gray-500 py-12">
             Enter a letter and select gender preference to generate names
           </div>

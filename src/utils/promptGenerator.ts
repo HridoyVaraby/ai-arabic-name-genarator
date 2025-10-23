@@ -41,10 +41,44 @@ Requirements:
 };
 
 export const generateMeaningPrompt = (meaning: string): string => {
-  return `
-    For the English word "${meaning}", provide the following in a JSON object:
-    1.  "directTranslation": { "arabic": "...", "pronunciation": "...", "englishMeaning": "..." }
-    2.  "names": [ { "arabic": "...", "transliteration": "...", "gender": "...", "meaning_nuance": "..." }, ... ]
-    3.  "synonyms": [ { "arabic_word": "...", "transliteration": "...", "concept": "...", "englishMeaning": "...", "names": [ ... ] }, ... ]
-    `;
+  return `For the English word "${meaning}", provide the following in a JSON object. Respond ONLY with valid JSON, no other text or explanations.
+
+The response must be a JSON object with this exact structure:
+{
+  "directTranslation": {
+    "arabic": "Arabic translation here",
+    "pronunciation": "Pronunciation guide here",
+    "englishMeaning": "English meaning here"
+  },
+  "names": [
+    {
+      "arabic": "Arabic name here",
+      "transliteration": "Transliteration here",
+      "gender": "male|female|neutral",
+      "meaning_nuance": "Specific meaning nuance here"
+    }
+  ],
+  "synonyms": [
+    {
+      "arabic_word": "Arabic synonym here",
+      "transliteration": "Transliteration here",
+      "concept": "Concept description here",
+      "englishMeaning": "English meaning here",
+      "names": [
+        {
+          "arabic": "Arabic name here",
+          "transliteration": "Transliteration here"
+        }
+      ]
+    }
+  ]
+}
+
+Requirements:
+- Return ONLY the JSON object with the exact structure above
+- Ensure all properties are present in each object
+- Include at least 5 names in the "names" array
+- Include at least 3 synonyms in the "synonyms" array
+- For the "names" array, specify gender as "male", "female", or "neutral"
+- Ensure perfect JSON formatting with proper quotes and commas`;
 };

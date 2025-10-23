@@ -4,7 +4,7 @@ import { SearchForm } from './components/SearchForm';
 import { NameCard } from './components/NameCard';
 import { ArabicName, Gender } from './types/name';
 import { validateLetter } from './utils/nameUtils';
-import { generateNames } from './services/nameGenerator';
+import { generateNames, generateNamesByMeaning } from './services/nameGenerator';
 import { DEFAULT_MODEL } from './config/api';
 
 function App() {
@@ -14,9 +14,11 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [currentLetter, setCurrentLetter] = useState<string>('');
   const [currentGender, setCurrentGender] = useState<Gender>('neutral');
+  const [searchType, setSearchType] = useState<'letter' | 'meaning'>('letter'); // Track search type
 
   const handleSubmit = async (letter: string, gender: Gender) => {
     setError(null);
+    setSearchType('letter'); // Set search type to letter
     
     if (!validateLetter(letter)) {
       setError('Please enter a valid Arabic or English letter');
@@ -61,6 +63,29 @@ function App() {
     setError(null);
     setCurrentLetter('');
     setCurrentGender('neutral');
+    setSearchType('letter');
+  };
+
+  const handleSearchByMeaning = async (meaning: string) => {
+    setError(null);
+    setSearchType('meaning'); // Set search type to meaning
+    setIsLoading(true);
+    try {
+      const result = await generateNamesByMeaning(meaning, DEFAULT_MODEL.id);
+      const generatedNames = result.names.map(name => ({
+        arabic: name.arabic,
+        transliteration: name.transliteration,
+        meaning: name.meaning_nuance,
+        gender: name.gender, // Include gender from the search result
+        culturalSignificance: `Associated with meanings of ${meaning}.`
+      }));
+      setNames(generatedNames);
+      setAllGeneratedNames(generatedNames);
+    } catch {
+      setError('Failed to generate names by meaning. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -75,6 +100,7 @@ function App() {
 
         <SearchForm
           onSubmit={handleSubmit}
+          onSearchByMeaning={handleSearchByMeaning}
           onReset={handleReset}
           isLoading={isLoading}
         />
@@ -90,18 +116,21 @@ function App() {
             {names.map((name, index) => (
               <NameCard key={index} name={name} />
             ))}
-            <div className="col-span-full flex justify-center">
-              <button
-                onClick={handleGenerateMore}
-                disabled={isLoading}
-                className="flex items-center justify-center px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
-              >
-                {isLoading ? (
-                  <RefreshCw className="w-5 h-5 animate-spin mr-2" />
-                ) : null}
-                Generate More
-              </button>
-            </div>
+            {/* Only show "Generate More" button for letter-based searches */}
+            {searchType === 'letter' && (
+              <div className="col-span-full flex justify-center">
+                <button
+                  onClick={handleGenerateMore}
+                  disabled={isLoading}
+                  className="flex items-center justify-center px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
+                >
+                  {isLoading ? (
+                    <RefreshCw className="w-5 h-5 animate-spin mr-2" />
+                  ) : null}
+                  Generate More
+                </button>
+              </div>
+            )}
           </div>
         )}
 

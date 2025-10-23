@@ -4,7 +4,7 @@ import { SearchForm } from './components/SearchForm';
 import { NameCard } from './components/NameCard';
 import { ArabicName, Gender } from './types/name';
 import { validateLetter } from './utils/nameUtils';
-import { generateNames } from './services/nameGenerator';
+import { generateNames, generateNamesByMeaning } from './services/nameGenerator';
 import { DEFAULT_MODEL } from './config/api';
 
 function App() {
@@ -63,6 +63,26 @@ function App() {
     setCurrentGender('neutral');
   };
 
+  const handleSearchByMeaning = async (meaning: string) => {
+    setError(null);
+    setIsLoading(true);
+    try {
+      const result = await generateNamesByMeaning(meaning, DEFAULT_MODEL.id);
+      const generatedNames = result.names.map(name => ({
+        arabic: name.arabic,
+        transliteration: name.transliteration,
+        meaning: name.meaning_nuance,
+        culturalSignificance: `Associated with meanings of ${meaning}.`
+      }));
+      setNames(generatedNames);
+      setAllGeneratedNames(generatedNames);
+    } catch {
+      setError('Failed to generate names by meaning. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -75,6 +95,7 @@ function App() {
 
         <SearchForm
           onSubmit={handleSubmit}
+          onSearchByMeaning={handleSearchByMeaning}
           onReset={handleReset}
           isLoading={isLoading}
         />

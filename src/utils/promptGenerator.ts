@@ -1,12 +1,7 @@
 import { Gender } from '../types/name';
 
 export const generatePrompt = (letter: string, gender: Gender): string => {
-  const isArabic = /[\u0600-\u06FF]/.test(letter);
-  const letterInfo = isArabic
-    ? `"${letter}" (Arabic letter)`
-    : `"${letter}" (English letter "${letter.toLowerCase()}")`;
-
-  return `Generate 8 authentic Arabic names that start with the letter ${letterInfo} for ${gender} gender.
+  return `Generate 8 authentic Arabic names that start with the letter "${letter}" for ${gender} gender.
 
 IMPORTANT: You must respond with ONLY a valid JSON array. No other text, explanations, or formatting.
 

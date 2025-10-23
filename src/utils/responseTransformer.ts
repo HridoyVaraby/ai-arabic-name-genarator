@@ -1,6 +1,6 @@
 import { ArabicName } from '../types/name';
 
-const extractJSONFromText = (text: string): any => {
+const extractJSONFromText = (text: string): unknown => {
   try {
     // First attempt: direct JSON parse
     return JSON.parse(text);
@@ -16,7 +16,7 @@ const extractJSONFromText = (text: string): any => {
     }
 
     try {
-      let cleanedJSON = jsonText
+      const cleanedJSON = jsonText
         .replace(/[\u200B-\u200D\uFEFF]/g, '') // Remove zero-width spaces
         .replace(/,\s*([}\]])/g, '$1') // Remove trailing commas before closing brackets
         .replace(/([{,]\s*)(\w+):/g, '$1"$2":') // Add quotes to unquoted keys
@@ -64,20 +64,17 @@ const extractJSONFromText = (text: string): any => {
   }
 };
 
-const validateName = (name: any): boolean => {
+const validateName = (name: unknown): name is Partial<ArabicName> => {
   return (
     typeof name === 'object' &&
-    typeof name.arabic === 'string' &&
-    typeof name.transliteration === 'string' &&
-    typeof name.meaning === 'string' &&
-    (name.culturalSignificance === undefined || typeof name.culturalSignificance === 'string') &&
-    name.arabic.trim() !== '' &&
-    name.transliteration.trim() !== '' &&
-    name.meaning.trim() !== ''
+    name !== null &&
+    'arabic' in name && typeof (name as { arabic: unknown }).arabic === 'string' &&
+    'transliteration' in name && typeof (name as { transliteration: unknown }).transliteration === 'string' &&
+    'meaning' in name && typeof (name as { meaning: unknown }).meaning === 'string'
   );
 };
 
-const sanitizeName = (name: any): ArabicName => ({
+const sanitizeName = (name: Partial<ArabicName>): ArabicName => ({
   arabic: String(name.arabic).trim(),
   transliteration: String(name.transliteration).trim(),
   meaning: String(name.meaning).trim(),

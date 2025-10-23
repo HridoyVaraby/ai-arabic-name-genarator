@@ -30,7 +30,7 @@ function App() {
       setAllGeneratedNames(generatedNames);
       setCurrentLetter(letter);
       setCurrentGender(gender);
-    } catch (err) {
+    } catch {
       setError('Failed to generate names. Please try again.');
     } finally {
       setIsLoading(false);
@@ -48,7 +48,7 @@ function App() {
       );
       setNames(prevNames => [...prevNames, ...uniqueNewNames]);
       setAllGeneratedNames(prevNames => [...prevNames, ...uniqueNewNames]);
-    } catch (err) {
+    } catch {
       setError('Failed to generate names. Please try again.');
     } finally {
       setIsLoading(false);

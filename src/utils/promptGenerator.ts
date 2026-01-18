@@ -1,6 +1,28 @@
 import { Gender } from '../types/name';
 
+const sanitizeInput = (input: string, maxLength: number = 50): string => {
+  if (!input) return '';
+  // 1. Trim whitespace
+  let sanitized = input.trim();
+
+  // 2. Limit length
+  if (sanitized.length > maxLength) {
+    sanitized = sanitized.substring(0, maxLength);
+  }
+
+  // 3. Remove control characters to prevent injection
+  // eslint-disable-next-line no-control-regex
+  sanitized = sanitized.replace(/[\x00-\x1F\x7F]/g, '');
+
+  // 4. Remove quotes to prevent breaking out of the prompt context
+  sanitized = sanitized.replace(/["'`]/g, '');
+
+  return sanitized;
+};
+
 export const generatePrompt = (letter: string, gender: Gender): string => {
+  const cleanLetter = sanitizeInput(letter, 10);
+
   // Map English letters to their Arabic equivalents for better AI understanding
   const englishToArabicMap: { [key: string]: string } = {
     'A': 'ا (Alif)', 'B': 'ب (Ba)', 'C': 'ك (Kaf) or ق (Qaf)', 'D': 'د (Dal)', 'E': 'ع (Ayn) or ا (Alif)', 
@@ -11,10 +33,10 @@ export const generatePrompt = (letter: string, gender: Gender): string => {
     'Z': 'ز (Zay)'
   };
 
-  const isEnglishLetter = /^[A-Z]$/i.test(letter);
-  const arabicEquivalent = isEnglishLetter ? englishToArabicMap[letter.toUpperCase()] || letter : letter;
+  const isEnglishLetter = /^[A-Z]$/i.test(cleanLetter);
+  const arabicEquivalent = isEnglishLetter ? englishToArabicMap[cleanLetter.toUpperCase()] || cleanLetter : cleanLetter;
 
-  return `Generate 8 authentic Arabic names that start with the letter "${letter}" for ${gender} gender.
+  return `Generate 8 authentic Arabic names that start with the letter "${cleanLetter}" for ${gender} gender.
 
 IMPORTANT: You must respond with ONLY a valid JSON array. No other text, explanations, or formatting.
 
@@ -31,7 +53,7 @@ The response must be a JSON array like this:
 Requirements:
 - Return ONLY the JSON array
 - Start your response with [ and end with ]
-- Each name must start with the letter ${letter}${isEnglishLetter ? ` (which corresponds to the Arabic letter ${arabicEquivalent})` : ''}
+- Each name must start with the letter ${cleanLetter}${isEnglishLetter ? ` (which corresponds to the Arabic letter ${arabicEquivalent})` : ''}
 - Names must be culturally appropriate for ${gender}
 - Each name must be unique and traditional
 - Include exactly 8 names
@@ -41,7 +63,8 @@ Requirements:
 };
 
 export const generateMeaningPrompt = (meaning: string): string => {
-  return `For the English word "${meaning}", provide the following in a JSON object. Respond ONLY with valid JSON, no other text or explanations.
+  const cleanMeaning = sanitizeInput(meaning, 100);
+  return `For the English word "${cleanMeaning}", provide the following in a JSON object. Respond ONLY with valid JSON, no other text or explanations.
 
 The response must be a JSON object with this exact structure:
 {
